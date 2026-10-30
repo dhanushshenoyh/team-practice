@@ -2,6 +2,6 @@
 
 Welcome to the Job Portal Async Dashboard project.
 
-## Project Status: Initial Base Setup
+## Project Status: Header module integrated by Frontend Lead (feature/header).
 
 This repository demonstrates team Git workflow, merge conflict resolution, and parallel JavaScript async patterns.
