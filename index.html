@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechCareer Portal | Async Dashboard & Team Git Workflow</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-hover: #0ea5e9;
+      --success: #4ade80;
+      --danger: #f87171;
+      --warning: #fbbf24;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 68rem;
+      margin: 0 auto;
+    }
+
+    header.dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 0.75rem;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .brand h1 {
+      font-size: 1.5rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: rgba(74, 222, 128, 0.15);
+      color: var(--success);
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(74, 222, 128, 0.3);
+    }
+
+    .meta-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-left: 1.25rem;
+      transition: color 0.15s;
+    }
+
+    .meta-links a:hover {
+      color: var(--primary);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+    }
+
+    .card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .terminal-window {
+      background: #090d16;
+      border: 1px solid #1e293b;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.875rem;
+      min-height: 14rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    .terminal-line {
+      margin-bottom: 0.35rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .tag-seq { color: #38bdf8; }
+    .tag-par { color: #818cf8; }
+    .tag-err { color: #f87171; }
+    .tag-settled { color: #fbbf24; }
+    .tag-race { color: #34d399; }
+
+    button.btn {
+      background: var(--primary);
+      color: #0f172a;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.6rem 1.25rem;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.05s;
+    }
+
+    button.btn:hover {
+      background: var(--primary-hover);
+    }
+
+    button.btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: #334155;
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+    }
+
+    .services-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .service-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: #090d16;
+      border: 1px solid #1e293b;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .service-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+    }
+
+    .status-ok {
+      background: rgba(74, 222, 128, 0.15);
+      color: var(--success);
+    }
+
+    .status-fail {
+      background: rgba(248, 113, 113, 0.15);
+      color: var(--danger);
+    }
+
+    .fetch-controls {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .fetch-controls button {
+      font-size: 0.85rem;
+      padding: 0.4rem 0.8rem;
+    }
+
+    .conflict-preview {
+      margin-top: 1.5rem;
+    }
+
+    .conflict-preview img {
+      width: 100%;
+      border-radius: 0.5rem;
+      border: 1px solid var(--surface-border);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    footer.dashboard-footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding: 2rem 0;
+      border-top: 1px solid var(--surface-border);
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header class="dashboard-header">
+      <div class="brand">
+        <h1>TechCareer Portal <span class="badge">Async Live</span></h1>
+      </div>
+      <div class="meta-links">
+        <a href="https://github.com/dhanushshenoyh/team-workflow-async-dashboard" target="_blank" rel="noopener">GitHub Repo</a>
+        <a href="https://github.com/dhanushshenoyh/team-practice" target="_blank" rel="noopener">Team Practice Repo</a>
+      </div>
+    </header>
+
+    <div class="grid-2">
+      <!-- Simulated Microservices -->
+      <section class="card">
+        <h2>Simulated Services <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: normal;">Task 3</span></h2>
+        <div class="services-list">
+          <div class="service-item">
+            <div>
+              <strong>getProfile()</strong>
+              <div style="color: var(--text-muted); font-size: 0.8rem;">Resolves { name: 'Asha' } (300 ms)</div>
+            </div>
+            <span class="service-status status-ok">300ms</span>
+          </div>
+
+          <div class="service-item">
+            <div>
+              <strong>getJobs()</strong>
+              <div style="color: var(--text-muted); font-size: 0.8rem;">Resolves 3 titles (500 ms)</div>
+            </div>
+            <span class="service-status status-ok">500ms</span>
+          </div>
+
+          <div class="service-item">
+            <div>
+              <strong>getSalaryData()</strong>
+              <div style="color: var(--text-muted); font-size: 0.8rem;">Rejects: 'Salary service down' (200 ms)</div>
+            </div>
+            <span class="service-status status-fail">Fails 200ms</span>
+          </div>
+
+          <div class="service-item">
+            <div>
+              <strong>timeout(400)</strong>
+              <div style="color: var(--text-muted); font-size: 0.8rem;">Rejection threshold timer</div>
+            </div>
+            <span class="service-status status-ok">400ms</span>
+          </div>
+        </div>
+
+        <button id="btn-run-async" class="btn" style="width: 100%;">Run Async Dashboard Drills</button>
+      </section>
+
+      <!-- Terminal Output Display -->
+      <section class="card">
+        <h2>Console Output <button id="btn-clear-term" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.2rem 0.6rem;">Clear</button></h2>
+        <div id="terminal" class="terminal-window" aria-live="polite">Click "Run Async Dashboard Drills" to view execution output...</div>
+      </section>
+    </div>
+
+    <!-- SafeFetch & Error Handling -->
+    <section class="card" style="margin-bottom: 2rem;">
+      <h2>Resilient safeFetch(url) Inspector <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: normal;">Task 4</span></h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+        Executes fetch with AbortController 5s timeout, validates <code>res.ok</code>, and guarantees <code>{ data, error }</code> without unhandled rejections.
+      </p>
+
+      <div class="fetch-controls">
+        <button id="btn-fetch-ok" class="btn btn-secondary">Test Working URL (200 OK)</button>
+        <button id="btn-fetch-404" class="btn btn-secondary">Test 404 URL (Not Found)</button>
+        <button id="btn-fetch-fail" class="btn btn-secondary">Test Invalid Domain (Network Fail)</button>
+      </div>
+
+      <div id="fetch-output" class="terminal-window" style="min-height: 8rem;">Select an endpoint above to run safeFetch...</div>
+    </section>
+
+    <!-- Git Merge Conflict Visual Evidence -->
+    <section class="card">
+      <h2>Team Git Workflow & Conflict Markers <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: normal;">Task 1</span></h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        Deliberate merge conflict generated between <code>feature/header</code> and <code>feature/footer</code> on line 5 of <code>README.md</code>, resolved in commit <code>74cf185</code>.
+      </p>
+      <div class="conflict-preview">
+        <img src="screenshots/conflict-markers.png" alt="Git merge conflict markers screenshot showing HEAD vs incoming branch changes">
+      </div>
+    </section>
+
+    <footer class="dashboard-footer">
+      <p>&copy; 2026 TechCareer Portal &bull; MERN + AI Day 02 Assignment &bull; Built with semantic HTML, async/await, and Git best practices.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Microservice simulators
+    const getProfile = () => new Promise(res => setTimeout(() => res({ name: 'Asha' }), 300));
+    const getJobs = () => new Promise(res => setTimeout(() => res(['Frontend Engineer', 'Full Stack Developer', 'Cloud Architect']), 500));
+    const getSalaryData = () => new Promise((_, rej) => setTimeout(() => rej('Salary service down'), 200));
+    const timeout = (ms) => new Promise((_, rej) => setTimeout(() => rej(`Timed out after ${ms} ms`), ms));
+
+    const round100 = (ms) => Math.round(ms / 100) * 100;
+    const term = document.getElementById('terminal');
+
+    function logToTerm(text, className = '') {
+      const line = document.createElement('div');
+      line.className = 'terminal-line ' + className;
+      line.textContent = text;
+      term.appendChild(line);
+      term.scrollTop = term.scrollHeight;
+    }
+
+    document.getElementById('btn-clear-term').addEventListener('click', () => {
+      term.textContent = '';
+    });
+
+    document.getElementById('btn-run-async').addEventListener('click', async () => {
+      term.textContent = '';
+      logToTerm('Executing async operations...', 'tag-seq');
+
+      // 1. Sequential
+      const t1 = performance.now();
+      const profile = await getProfile();
+      const jobs = await getJobs();
+      const elapsed1 = round100(performance.now() - t1);
+      logToTerm(`Sequential: ${profile.name} with ${jobs.length} jobs in ~${elapsed1} ms`, 'tag-seq');
+
+      // 2. Parallel
+      const t2 = performance.now();
+      const [p2, j2] = await Promise.all([getProfile(), getJobs()]);
+      const elapsed2 = round100(performance.now() - t2);
+      logToTerm(`Parallel: ${p2.name} with ${j2.length} jobs in ~${elapsed2} ms`, 'tag-par');
+
+      // 3. Promise.all failure
+      try {
+        await Promise.all([getProfile(), getJobs(), getSalaryData()]);
+      } catch (err) {
+        logToTerm(`Promise.all failed: ${err}`, 'tag-err');
+      }
+
+      // 4. Promise.allSettled
+      const settled = await Promise.allSettled([getProfile(), getJobs(), getSalaryData()]);
+      logToTerm(`allSettled: ${settled.map(r => r.status).join(', ')}`, 'tag-settled');
+
+      // 5. Promise.race against timeout(400) vs jobs (500ms)
+      try {
+        await Promise.race([getJobs(), timeout(400)]);
+      } catch (err) {
+        logToTerm(`race: ${err}`, 'tag-race');
+      }
+
+      // 6. Promise.race against timeout(400) vs profile (300ms)
+      try {
+        const winner = await Promise.race([getProfile(), timeout(400)]);
+        logToTerm(`race: ${winner.name} arrived first`, 'tag-race');
+      } catch (err) {
+        logToTerm(`race: ${err}`, 'tag-race');
+      }
+    });
+
+    // SafeFetch implementation
+    async function safeFetch(url) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 5000);
+      try {
+        const res = await fetch(url, { signal: controller.signal });
+        if (!res.ok) {
+          return { data: null, error: `HTTP Error ${res.status} (${res.statusText || 'Status Not OK'})` };
+        }
+        const data = await res.json();
+        return { data, error: null };
+      } catch (err) {
+        return { data: null, error: err.name === 'AbortError' ? 'Request timed out after 5000ms' : (err.message || 'Network error') };
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    const fetchOutput = document.getElementById('fetch-output');
+
+    document.getElementById('btn-fetch-ok').addEventListener('click', async () => {
+      fetchOutput.textContent = 'Calling https://jsonplaceholder.typicode.com/todos/1 ...';
+      const res = await safeFetch('https://jsonplaceholder.typicode.com/todos/1');
+      fetchOutput.textContent = JSON.stringify(res, null, 2);
+    });
+
+    document.getElementById('btn-fetch-404').addEventListener('click', async () => {
+      fetchOutput.textContent = 'Calling https://jsonplaceholder.typicode.com/posts/999999/not-found ...';
+      const res = await safeFetch('https://jsonplaceholder.typicode.com/posts/999999/not-found');
+      fetchOutput.textContent = JSON.stringify(res, null, 2);
+    });
+
+    document.getElementById('btn-fetch-fail').addEventListener('click', async () => {
+      fetchOutput.textContent = 'Calling https://this-domain-definitely-does-not-exist-xyz123.com ...';
+      const res = await safeFetch('https://this-domain-definitely-does-not-exist-xyz123.com');
+      fetchOutput.textContent = JSON.stringify(res, null, 2);
+    });
+  </script>
+</body>
+</html>
