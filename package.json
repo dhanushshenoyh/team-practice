@@ -1,0 +1,23 @@
+{
+  "name": "team-workflow-async-dashboard",
+  "version": "1.0.0",
+  "description": "MERN + AI Day 02 Assignment: Collaborative Git Workflow, Rescue Moves & Asynchronous JavaScript Dashboard",
+  "main": "async.js",
+  "scripts": {
+    "start": "node async.js",
+    "test:async": "node async.js",
+    "test:fetch": "node safeFetch.js",
+    "test": "node async.js && node safeFetch.js"
+  },
+  "keywords": [
+    "git",
+    "merge-conflict",
+    "async-await",
+    "promise-all",
+    "promise-allsettled",
+    "promise-race",
+    "safefetch"
+  ],
+  "author": "Dhanush Shenoy",
+  "license": "MIT"
+}
