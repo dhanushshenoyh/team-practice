@@ -4,6 +4,14 @@ A comprehensive hands-on project demonstrating professional Git collaboration wo
 
 ---
 
+## Live Deployments & Repository
+- **Production URL (Vercel):** [https://team-workflow-async-dashboard.vercel.app](https://team-workflow-async-dashboard.vercel.app)
+- **Production URL (GitHub Pages):** [https://dhanushshenoyh.github.io/team-workflow-async-dashboard/](https://dhanushshenoyh.github.io/team-workflow-async-dashboard/)
+- **GitHub Repository (Primary):** [https://github.com/dhanushshenoyh/team-workflow-async-dashboard](https://github.com/dhanushshenoyh/team-workflow-async-dashboard)
+- **GitHub Repository (Team Practice):** [https://github.com/dhanushshenoyh/team-practice](https://github.com/dhanushshenoyh/team-practice)
+
+---
+
 ## 1. Git Rescue Moves & Core Concepts
 
 ### Why `git reset` is dangerous on shared branches
